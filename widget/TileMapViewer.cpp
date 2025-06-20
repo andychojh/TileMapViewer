@@ -183,11 +183,27 @@ void TileMapViewer::mousePressEvent(QMouseEvent* event) {
         currentLat = coord.first;
         currentLng = coord.second;
 
-        // menu에 action 을 추가, 좌표만 표시 할 거라 Action 을 disable
-        menu.addAction(QString("경도: %1").arg(currentLat, 0, 'f', 8))->setEnabled(false);
-        menu.addAction(QString("위도: %1").arg(currentLng, 0, 'f', 8))->setEnabled(false);
-        menu.exec(event->globalPosition().toPoint()); // menu.exec을 호출하여 menu 의 위치를 세팅
-       
+        // 메뉴와 메뉴 액션들 생성
+        QMenu contextMenu(this);
+        contextMenu.addAction(QString("경도: %1").arg(currentLng, 0, 'f', 7))->setEnabled(false);
+        contextMenu.addAction(QString("위도: %1").arg(currentLat, 0, 'f', 7))->setEnabled(false);
+        contextMenu.addSeparator();
+
+        // 출발지/목적지 설정 메뉴
+        QAction* departureAction = contextMenu.addAction("출발지 설정");
+        QAction* destinationAction = contextMenu.addAction("목적지 설정");
+        QAction* selectedAction = contextMenu.exec(event->globalPosition().toPoint()); // 액션 선택
+
+        if (selectedAction) { // 메뉴 안을 눌렀으면
+            if (selectedAction == departureAction) {
+                QString coordText = QString::number(currentLng, 'f', 7) + ", " + QString::number(currentLat, 'f', 7);
+                this->setDeparture(coordText);
+            }
+            else if (selectedAction == destinationAction) {
+                QString coordText = QString::number(currentLng, 'f', 7) + ", " + QString::number(currentLat, 'f', 7);
+                this->setDestination(coordText);
+            }
+        }
     }
 }
 
